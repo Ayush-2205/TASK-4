@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ayush Mohanty - Portfolio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header, nav, section, footer {
+      padding: 20px;
+    }
+    nav {
+      background-color: #333;
+      color: white;
+      display: flex;
+      justify-content: space-around;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+    }
+    nav a:hover {
+      background-color: #555;
+    }
+    section {
+      padding: 40px 20px;
+    }
+    .project, .product {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+    }
+    input, select, button {
+      margin: 5px 0;
+      padding: 8px;
+    }
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ayush Mohanty</h1>
+  <p>Hi this is Ayush Mohanty, a passionate web developer showcasing my projects and skills.</p>
+</header>
+
+<nav>
+  <a href="#about">About</a>
+  <a href="#projects">Projects</a>
+  <a href="#contact">Contact</a>
+  <a href="#todo">To-Do App</a>
+  <a href="#products">Product Listing</a>
+</nav>
+
+<section id="about">
+  <h2>About Me</h2>
+  <p>I’m Ayush Mohanty, a front-end developer focused on creating responsive and functional web experiences using HTML, CSS, and JavaScript.</p>
+</section>
+
+<section id="projects">
+  <h2>Projects</h2>
+  <div class="project">
+    <h3>Portfolio Website</h3>
+    <p>A multi-page site with about, contact, and project sections — fully responsive.</p>
+  </div>
+  <div class="project">
+    <h3>To-Do App</h3>
+    <p>Save tasks locally in the browser with localStorage.</p>
+  </div>
+  <div class="project">
+    <h3>Product Listing</h3>
+    <p>Filter and sort products with JavaScript interactivity.</p>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Contact Me</h2>
+  <p>Email: mohantyayush2205@gmail.com</p>
+</section>
+
+<section id="todo">
+  <h2>To-Do / Notes App</h2>
+  <input type="text" id="taskInput" placeholder="Enter task">
+  <button onclick="addTask()">Add Task</button>
+  <ul id="taskList"></ul>
+</section>
+
+<section id="products">
+  <h2>Product Listing</h2>
+  <label>Category:
+    <select id="filterCategory">
+      <option value="all">All</option>
+      <option value="electronics">Electronics</option>
+      <option value="clothing">Clothing</option>
+    </select>
+  </label>
+  <label>Sort by:
+    <select id="sortOption">
+      <option value="price">Price</option>
+      <option value="rating">Rating</option>
+    </select>
+  </label>
+  <div class="grid" id="productContainer"></div>
+</section>
+
+<footer>
+  <p>© 2025 Ayush Mohanty. All rights reserved.</p>
+</footer>
+
+<script>
+  // To-Do App with localStorage
+  const taskInput = document.getElementById('taskInput');
+  const taskList = document.getElementById('taskList');
+
+  function loadTasks() {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    taskList.innerHTML = '';
+    tasks.forEach((task, index) => {
+      const li = document.createElement('li');
+      li.textContent = task;
+      const btn = document.createElement('button');
+      btn.textContent = 'X';
+      btn.onclick = () => removeTask(index);
+      li.appendChild(btn);
+      taskList.appendChild(li);
+    });
+  }
+
+  function addTask() {
+    const task = taskInput.value.trim();
+    if (!task) return;
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks.push(task);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    taskInput.value = '';
+    loadTasks();
+  }
+
+  function removeTask(index) {
+    const tasks = JSON.parse(localStorage.getItem('tasks'));
+    tasks.splice(index, 1);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    loadTasks();
+  }
+
+  loadTasks();
+
+  // Product Listing with Filtering and Sorting
+  const products = [
+    { name: 'Smartphone', category: 'electronics', price: 15000, rating: 4.5 },
+    { name: 'T-Shirt', category: 'clothing', price: 500, rating: 4.0 },
+    { name: 'Laptop', category: 'electronics', price: 55000, rating: 4.7 },
+    { name: 'Jeans', category: 'clothing', price: 1200, rating: 4.2 }
+  ];
+
+  const filterCategory = document.getElementById('filterCategory');
+  const sortOption = document.getElementById('sortOption');
+  const productContainer = document.getElementById('productContainer');
+
+  function displayProducts() {
+    const cat = filterCategory.value;
+    const sort = sortOption.value;
+    let filtered = [...products];
+
+    if (cat !== 'all') {
+      filtered = filtered.filter(p => p.category === cat);
+    }
+
+    if (sort === 'price') {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (sort === 'rating') {
+      filtered.sort((a, b) => b.rating - a.rating);
+    }
+
+    productContainer.innerHTML = '';
+    filtered.forEach(product => {
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.innerHTML = `<h3>${product.name}</h3>
+                       <p>Category: ${product.category}</p>
+                       <p>Price: ₹${product.price}</p>
+                       <p>Rating: ${product.rating} ★</p>`;
+      productContainer.appendChild(div);
+    });
+  }
+
+  filterCategory.addEventListener('change', displayProducts);
+  sortOption.addEventListener('change', displayProducts);
+  displayProducts();
+</script>
+
+</body>
+</html>
